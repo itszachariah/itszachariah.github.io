@@ -8,7 +8,7 @@
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; min-width: 280px; }
-body { background: #000 url("assets/grain.png") repeat; }
+body { background: #000 url("assets/grain.png?v=2") repeat; }
 a { color: inherit; }
 .landing {
   position: relative;
@@ -18,22 +18,16 @@ a { color: inherit; }
   height: 100svh;
   min-height: 320px;
   overflow: hidden;
-  background: #000 url("assets/grain.png") repeat;
+  background: #000 url("assets/grain.png?v=2") repeat;
 }
-/* A single 3840 × 2560 coordinate system keeps the eclipse, beam and
-   crosshair aligned. Only the viewport crop changes on wider screens. */
+/* The scene is the viewport itself: it is never cover-scaled or cropped. */
 .scene {
   position: absolute;
-  width: 3840px;
-  height: 2560px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%) scale(var(--scene-scale));
+  inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
-  /* This backdrop belongs inside the transformed stacking context, so the
-     eclipse group has the correct background for its color-dodge blend. */
-  background: #000 url("assets/grain.png") repeat;
-  background-size: var(--grain-period, 1280px) var(--grain-period, 1280px);
+  background: #000 url("assets/grain.png?v=2") repeat;
 }
 .scene img { position: absolute; display: block; max-width: none; }
 .dodge { mix-blend-mode: color-dodge; }
@@ -115,12 +109,8 @@ a { color: inherit; }
 }
 @media (max-aspect-ratio: 4/5) {
   .wordmark { top: max(56px, 12%); left: 50%; transform: translate(-50%, -50%); }
-  .enter { top: auto; bottom: max(84px, 14%); left: 50%; right: auto; transform: translateX(-50%); }
+  .enter { top: auto; bottom: max(76px, 9%); left: 50%; right: auto; transform: translateX(-50%); }
   .license { right: max(16px, env(safe-area-inset-right)); left: max(16px, env(safe-area-inset-left)); bottom: max(18px, env(safe-area-inset-bottom)); text-align: center; font-size: 12px; line-height: 1.65; }
-  .upper { left: 954px; top: 110px; }
-  .left { left: 1099px; top: 550px; }
-  .right { left: 1523px; top: 1294px; }
-  .lower { left: 1615px; top: 1669px; }
 }
 @media (max-height: 450px) and (min-aspect-ratio: 4/5) {
   .license { font-size: 11px; }

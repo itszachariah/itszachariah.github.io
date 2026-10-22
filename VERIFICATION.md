@@ -1,18 +1,17 @@
 # Verification
 
-Local checks completed in the connected Chrome browser:
+The corrected geometry is defined by the current browser viewport rather than a cover-scaled 3840 × 2560 artboard.
 
-| Viewport | Result |
-| --- | --- |
-| 1024 × 683 | Compared with the Figma reference; central geometry and original asset layers align. |
-| 1920 × 1080 | Wide composition, footer, entry and bounded canvas rendering checked. |
-| 768 × 1024 | Portrait tablet composition checked. |
-| 390 × 844 | Portrait phone composition, readable two-line footer and 44 px entry hit area checked. |
-| 320 × 568 | Narrow phone composition and footer fit checked. |
-| 844 × 390 | Landscape phone composition checked. |
+Pure geometry checks passed at 320×568, 390×844, 430×932, 768×1024, 1024×768, 1470×660, 1470×800, 1920×1080, 2560×1080 and 1280×400. These independently verify:
 
-No horizontal overflow was observed at these sizes. Keyboard Enter follows the entry link to `home.html`; its return link navigates back. Tab reaches the license link. Source assets and all required font chunks returned successful local HTTP responses. JavaScript syntax, local HTML resource paths, temporary Figma URL absence in application files and Git whitespace checks passed.
+- All five lunar centers are collinear, using each source image's actual disc center.
+- All five lunar discs fit the viewport, with unstretched photographic proportions.
+- Both crosshair diagonals connect viewport corners and meet at its exact center.
+- The spectrum's original outer ray ends at the bottom-right corner.
+- The last moon clears the entry link on portrait screens.
 
-Known browser extension errors were from Zotero's injected scripts, not the site. No application errors or missing assets were observed. Safari/Firefox and physical mobile devices have not been tested. Procedural grain and rasterization can differ from Figma's noise samples.
+Connected Chrome visual checks include narrow phone, portrait phone, landscape phone, tablet, wide desktop and short non-fullscreen windows. The footer no longer changes between solid white and speckled ink when crossing a circle. Typography is composited on a uniform isolated backdrop. Exact area sampling reduces coarse grain without a global blur; local short-window background grain deviation measured about 6/255.
 
-Remote publishing and live validation are recorded separately when completed; this file does not imply that deployment has succeeded.
+The entry and return links, source asset/font loading, JavaScript syntax and Git whitespace checks passed. Zotero extension connection messages are unrelated to the application. Safari/Firefox and physical mobile devices are not claimed as tested. Noise samples and font antialiasing can differ from Figma.
+
+Deployment and live verification are reported in the accompanying pull request and task result.
