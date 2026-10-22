@@ -1,12 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zachariah</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#202020">
+  <meta name="description" content="Zachariah 的个人网站。">
+  <title>Zachariah</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/fonts/sarasa.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="layout.js" defer></script>
 </head>
 <body>
-    <h1>hi, i'm zachariah.</h1>
-    <p>this is my website. this is simply a test.</p>
+  <main class="landing" aria-label="Zachariah 的个人网站首页">
+    <canvas class="composite" aria-hidden="true"></canvas>
+    <div class="scene" aria-hidden="true">
+      <div class="eclipses" data-figma-node="2001:9">
+        <img class="eclipse upper" src="assets/eclipse-upper.png" width="1272" height="852" alt="" draggable="false">
+        <img class="eclipse left" src="assets/eclipse-left.png" width="1218" height="816" alt="" draggable="false">
+        <img class="eclipse right" src="assets/eclipse-right.png" width="1218" height="816" alt="" draggable="false">
+        <img class="eclipse lower" src="assets/eclipse-lower.png" width="1218" height="816" alt="" draggable="false">
+        <img class="eclipse center" src="assets/eclipse-center.png" width="1218" height="816" alt="" draggable="false">
+      </div>
+      <img class="eclipse center center-overlay dodge" data-figma-node="2002:35" src="assets/eclipse-center.png" width="1218" height="816" alt="" draggable="false">
+      <img class="spectrum dodge" src="assets/spectrum.svg" width="1936" height="1294" alt="" draggable="false">
+      <img class="circles" src="assets/circles.svg" width="2527" height="3994" alt="" draggable="false">
+      <img class="crosshair" src="assets/crosshair.svg" width="3840.55" height="2563.42" alt="" draggable="false">
+    </div>
+    <h1 class="wordmark dodge">
+      <span class="visually-hidden">Zachariah</span>
+      <img src="assets/wordmark.svg" width="846" height="201" alt="" aria-hidden="true" draggable="false">
+    </h1>
+    <a class="enter dodge" href="home.html" aria-label="点击进入">
+      <img src="assets/enter.svg" width="541" height="101" alt="" aria-hidden="true" draggable="false">
+    </a>
+    <footer class="license dodge">
+      <span class="license-prefix">除非另有说明，本页面的内容遵循 </span><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" rel="license">CC BY-NC-SA 4.0 协议。</a>
+    </footer>
+  </main>
 </body>
 </html>
