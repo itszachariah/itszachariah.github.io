@@ -24,7 +24,9 @@ The original eclipse images and SVG exports live in `assets/`. The Figma file is
 
 Canvas 2D uses real `color-dodge` composition on the separate source images. Balanced subpixel grain participates before composition; exact area integration then reduces it without blurring image edges. A subtle monochrome finish is limited to ±6/255. Typography has its own uniform backdrop, preventing a circle or rainbow underneath a sentence from changing part of its brightness.
 
-`geometry.js` gives the five physical moon centers one common straight line, correcting the offset between each source image's canvas center and the actual lunar disc. Image sizes fit inside the viewport. Portrait spacing also leaves room for the entry link. Both crosshair diagonals connect the actual viewport corners and intersect at its center; the original spectrum's outer ray maps to the actual bottom-right corner, with independent horizontal/vertical scaling of the fan. Circular photos are never stretched.
+`geometry.js` gives the five physical moon centers one common straight line, correcting the offset between each source image's canvas center and the actual lunar disc. Image sizes fit inside the viewport. Portrait spacing also leaves room for the entry link. The crosshair follows the original three rays: top-left to center, and bottom-left to top-right. There is no center-to-bottom-right line. The original spectrum's outer ray maps to the actual bottom-right corner, with independent horizontal/vertical scaling of the fan. Circular photos are never stretched.
+
+A one-pixel capability check detects incorrect alpha handling in native Color Dodge. Affected browsers blend only the spectrum layer with the W3C alpha-aware formula; other artwork retains the native rendering path. Footer glyph buffers include extra drawing space to avoid clipping the first character.
 
 The composition uses the window's current width and height, including ordinary non-fullscreen windows. It does not cover-scale or crop a fixed artboard. Large decorative circles retain their circular shape and their original vertical relationship. A resize triggers a single redraw; there is no animation loop. Working canvas buffers are capped at 14 million pixels. HTML retains the heading, focus outlines and keyboard-operable links; a layered CSS fallback remains available.
 
@@ -36,4 +38,4 @@ Font notices and OFL copies are under `assets/fonts/`; see `THIRD_PARTY.md`.
 
 ## Known visual limits
 
-Figma and browsers use different rasterizers, so noise samples, antialiasing and tiny blurred edges can differ. Portrait composition is intentionally adapted. Verification covers the connected Chromium browser; Safari and Firefox require separate device/browser checks. No Figma source objects were edited.
+Figma and browsers use different rasterizers, so noise samples, antialiasing and tiny blurred edges can differ. Portrait composition is intentionally adapted. Verification covers connected Chrome and local macOS Safari, including a phone-sized viewport in Safari. Physical iOS 27 Safari and Firefox remain untested. No Figma source objects were edited.

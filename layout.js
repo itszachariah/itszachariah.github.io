@@ -18,7 +18,47 @@
   const glyphCtx = glyph.getContext('2d');
   const ink = document.createElement('canvas');
   const inkCtx = ink.getContext('2d');
+  // Some Safari canvas backends lose source alpha when a dodge channel is 1.
+  // Probe the result instead of selecting a workaround by browser name.
+  const probe = document.createElement('canvas');
+  probe.width = probe.height = 1;
+  const probeCtx = probe.getContext('2d', { willReadFrequently: true });
+  probeCtx.fillStyle = '#202020'; probeCtx.fillRect(0, 0, 1, 1);
+  probeCtx.globalCompositeOperation = 'color-dodge';
+  probeCtx.fillStyle = 'rgba(119,0,255,.3)'; probeCtx.fillRect(0, 0, 1, 1);
+  const nativeSpectrumDodge = Math.abs(probeCtx.getImageData(0, 0, 1, 1).data[2] - 99) <= 2;
   let ready = false, queued = false;
+
+  function drawSpectrum(beam, ratio) {
+    if (nativeSpectrumDodge) {
+      ctx.drawImage(images['spectrum.svg'], beam.x, beam.y, beam.width, beam.height);
+      return;
+    }
+    // Rasterize only this transparent layer, preserving its SVG blur/opacity.
+    groupCtx.save();
+    groupCtx.setTransform(1, 0, 0, 1, 0, 0);
+    groupCtx.clearRect(0, 0, group.width, group.height);
+    groupCtx.restore();
+    groupCtx.drawImage(images['spectrum.svg'], beam.x, beam.y, beam.width, beam.height);
+    const x = Math.max(0, Math.floor(beam.x * ratio));
+    const y = Math.max(0, Math.floor(beam.y * ratio));
+    const w = Math.min(canvas.width, Math.ceil((beam.x + beam.width) * ratio)) - x;
+    const h = Math.min(canvas.height, Math.ceil((beam.y + beam.height) * ratio)) - y;
+    const source = groupCtx.getImageData(x, y, w, h).data;
+    const destination = ctx.getImageData(x, y, w, h), data = destination.data;
+    // W3C compositing-1: source-over Color Dodge on an opaque backdrop.
+    // https://www.w3.org/TR/compositing-1/#blendingcolordodge
+    for (let i = 0; i < source.length; i += 4) {
+      const alpha = source[i + 3] / 255;
+      if (!alpha) continue;
+      for (let channel = 0; channel < 3; channel++) {
+        const b = data[i + channel], s = source[i + channel];
+        const blend = b === 0 ? 0 : s === 255 ? 255 : Math.min(255, b * 255 / (255 - s));
+        data[i + channel] = b + alpha * (blend - b);
+      }
+    }
+    ctx.putImageData(destination, x, y);
+  }
 
   function layout() {
     const { width, height } = landing.getBoundingClientRect();
@@ -99,7 +139,7 @@
     const center = g.moons[2];
     ctx.drawImage(images[center.asset], center.left, center.top, center.width, center.height);
     const beam = g.beam;
-    ctx.drawImage(images['spectrum.svg'], beam.x, beam.y, beam.width, beam.height);
+    drawSpectrum(beam, ratio);
     ctx.globalCompositeOperation = 'source-over';
     const circles = g.circles;
     ctx.drawImage(images['circles.svg'], circles.x, circles.y, circles.width, circles.height);
@@ -128,11 +168,11 @@
     };
     /* Color-dodge each glyph on an identical grain-only backdrop, then mask
        to the glyph. Underlying circles and spectrum cannot change its ink. */
-    function typography(box, paint) {
-      glyph.width = Math.max(1, Math.ceil(box.width * ratio));
-      glyph.height = Math.max(1, Math.ceil(box.height * ratio));
+    function typography(box, paint, padding = 0) {
+      glyph.width = Math.max(1, Math.ceil((box.width + 2 * padding) * ratio));
+      glyph.height = Math.max(1, Math.ceil((box.height + 2 * padding) * ratio));
       ink.width = glyph.width; ink.height = glyph.height;
-      screen(glyphCtx); paint(glyphCtx);
+      screen(glyphCtx); glyphCtx.translate(padding, padding); paint(glyphCtx);
       inkCtx.fillStyle = inkCtx.createPattern(images['grain.png'], 'repeat');
       inkCtx.fillRect(0, 0, ink.width, ink.height);
       inkCtx.globalCompositeOperation = 'color-dodge';
@@ -140,7 +180,7 @@
       inkCtx.globalCompositeOperation = 'destination-in';
       inkCtx.drawImage(glyph, 0, 0);
       output.globalAlpha = .65;
-      output.drawImage(ink, box.x, box.y, ink.width / ratio, ink.height / ratio);
+      output.drawImage(ink, box.x - padding, box.y - padding, ink.width / ratio, ink.height / ratio);
       output.globalAlpha = 1;
     }
     const title = localBox('.wordmark');
@@ -164,7 +204,7 @@
         c.textAlign = align === 'center' ? 'center' : align === 'right' ? 'right' : 'left';
         const x = c.textAlign === 'center' ? box.width / 2 : c.textAlign === 'right' ? box.width : 0;
         c.fillText(element.textContent, x, (box.height - ascent - descent) / 2 + ascent);
-      });
+      }, Math.ceil(parseFloat(style.fontSize)));
     }
     const pixels = output.getImageData(8, 8, 64, 64).data;
     let sum = 0, squared = 0;
@@ -172,6 +212,7 @@
     display.dataset.grain = JSON.stringify({ mean: sum / 4096, deviation: Math.sqrt(squared / 4096 - (sum / 4096) ** 2) });
     landing.classList.add('rendered');
     display.dataset.composite = 'color-dodge';
+    display.dataset.spectrumBlend = nativeSpectrumDodge ? 'native' : 'alpha-corrected';
     display.dataset.geometry = JSON.stringify({ center: g.center, radius, moons: g.moons.map(m => [m.x, m.y]), diagonals: g.diagonals, beamCorner: [width, height], typography: 'isolated' });
     display.dataset.resolution = `${canvas.width}x${canvas.height}`;
   }
