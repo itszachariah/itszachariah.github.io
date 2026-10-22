@@ -13,20 +13,20 @@ No build process, package installation, backend, analytics or runtime asset serv
 
 ## Artwork and rendering
 
-The five original eclipse images and five SVG exports live in `assets/`. The Figma file is unchanged. SVG dimensions, paths and filter padding are preserved. `layout.js` places the assets in the original 3840 × 2560 coordinate system:
+The original eclipse images and SVG exports live in `assets/`. The Figma file is unchanged, and source image proportions and SVG paths remain intact. `geometry.js` computes each layout from the current viewport, then `layout.js` composites the layers:
 
 1. Black backdrop with monochrome grain.
 2. Five-image eclipse group, color-dodge at 50% group opacity.
 3. Repeated central eclipse, color-dodge at 100% opacity.
 4. Color-dodge spectrum, with its original exported blur.
-5. Two translucent circles, crosshair lines and blurred central light.
-6. Color-dodge wordmark, entry lettering and license text.
+5. Two translucent circles, viewport-corner diagonals and blurred central light.
+6. Wordmark, entry lettering and license text, color-dodged against a uniform isolated backdrop before being composited over the scene.
 
-Canvas 2D's real `color-dodge` compositing performs these operations on individual source assets. It is **not** a full-page Figma screenshot. Binary grain is blended before downsampling to retain textured highlights; applying CSS color-dodge to already-downsampled grain would turn the highlights solid white. Grain is generated deterministically from seed 3975, matching the design's white/25%-alpha monochrome intent, rather than reproducing Figma's proprietary random noise pixel for pixel.
+Canvas 2D uses real `color-dodge` composition on the separate source images. Balanced subpixel grain participates before composition; exact area integration then reduces it without blurring image edges. A subtle monochrome finish is limited to ±6/255. Typography has its own uniform backdrop, preventing a circle or rainbow underneath a sentence from changing part of its brightness.
 
-The canvas resolution is capped at 14 million pixels. It redraws only on initial asset/font loading and layout changes. There are no animation loops. HTML supplies the heading and keyboard-operable links, including visible focus outlines. A layered HTML/CSS version remains available if JavaScript or Canvas cannot run; its highlight texture is less exact.
+`geometry.js` gives the five physical moon centers one common straight line, correcting the offset between each source image's canvas center and the actual lunar disc. Image sizes fit inside the viewport. Portrait spacing also leaves room for the entry link. Both crosshair diagonals connect the actual viewport corners and intersect at its center; the original spectrum's outer ray maps to the actual bottom-right corner, with independent horizontal/vertical scaling of the fan. Circular photos are never stretched.
 
-Wide viewports crop the scene around its center. Portrait viewports reposition peripheral eclipses, place the wordmark above the scene and keep the entry below it. The crosshair, central eclipse and beam share one coordinate transform. The footer wraps on narrow screens.
+The composition uses the window's current width and height, including ordinary non-fullscreen windows. It does not cover-scale or crop a fixed artboard. Large decorative circles retain their circular shape and their original vertical relationship. A resize triggers a single redraw; there is no animation loop. Working canvas buffers are capped at 14 million pixels. HTML retains the heading, focus outlines and keyboard-operable links; a layered CSS fallback remains available.
 
 ## Typography
 
