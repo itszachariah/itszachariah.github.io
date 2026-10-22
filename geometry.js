@@ -27,7 +27,7 @@
       // from its apex (8,8). Map that ray to the actual bottom-right corner.
       beam: { x: center.x - 8 * width / 3840, y: center.y - 8 * height / 2556,
         width: 1936 * width / 3840, height: 1294 * height / 2556 },
-      diagonals: [[0, 0, width, height], [0, height, width, 0]],
+      diagonals: [[0, 0, center.x, center.y], [0, height, width, 0]],
       circles: { x: center.x - 1263.5 * height / 2560, y: -717 * height / 2560,
         width: 2527 * height / 2560, height: 3994 * height / 2560 }
     };
